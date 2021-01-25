@@ -15,6 +15,7 @@ def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
         gpus = 1
         precision = 16
     trainer = pl.Trainer(
+        gpus = gpus,
         max_epochs=config.MAX_EPOCHS,
         min_epochs=1,
         callbacks=[early_stop_callback],
