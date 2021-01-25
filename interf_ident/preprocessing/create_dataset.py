@@ -14,20 +14,13 @@ def create_dataset():
     with open(label_path, "rb") as f:
         y_data = pickle.load(f, encoding="latin1")
 
-    x_data = x_data.reshape((-1, 2))
+    x_data = x_data.reshape((-1, 128, 2))
 
-    y_data = y_data.reshape((-1, 1))
-    y_data = np.repeat(y_data, repeats=128, axis=0)
+    y_data = y_data.ravel()
 
     X_train, X_test, y_train, y_test = train_test_split(
         x_data, y_data, stratify=y_data, test_size=0.25, random_state=42
     )
-
-    y_train = np.squeeze(y_train)
-    y_test = np.squeeze(y_test)
-    
-    del x_data
-    del y_data
 
     with open(f"{config.BASE_PATH}/data/X_train.npy", "wb") as f:
         np.save(f, X_train)
