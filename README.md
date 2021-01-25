@@ -3,7 +3,7 @@ This repository includes code for training a Convolutional Neural Network (CNN) 
 
 Dataset Used: http://www.crawdad.org/owl/interference/20190212/index.html
 
-We use very simple CNN model and achieve best accuracy of ~77% with 25 Epochs.
+We use very simple CNN model and achieve best accuracy of ~80% with 25 Epochs.
 
 This implementation uses pytorch library and pytorch lightning trainer
 
