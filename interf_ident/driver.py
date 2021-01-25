@@ -4,6 +4,7 @@ from interf_ident.preprocessing.create_dataset import create_dataset
 from interf_ident.trainer.trainer import model_trainer
 from interf_ident.data_loader.data_loader import create_data_loader
 from interf_ident.trainer.predict import evaluate_model
+from interf_ident.utils.util import get_confusion_matrix
 
 
 def main():
@@ -17,12 +18,13 @@ def main():
 
     train_loader = create_data_loader(X_train, y_train, batch_size=config.BATCH_SIZE)
     val_loader = create_data_loader(X_test, y_test, batch_size=config.BATCH_SIZE)
-    
+
     trainer = model_trainer(train_loader, val_loader, progress_bar_refresh_rate=0)
     model = trainer.get_model()
     result = evaluate_model(model, data_loader=val_loader)
     print(f"Test Loss: {result['loss']:.2f}")
     print(f"Test Accuracy: {result['accuracy']:.2f}")
+    confusion_matrix = get_confusion_matrix(result["targets"], result["predictions"])
 
 
 if __name__ == "__main__":
