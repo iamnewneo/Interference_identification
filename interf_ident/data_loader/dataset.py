@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torch.utils.data import Dataset
 
 
@@ -12,6 +13,7 @@ class InterfIdentDataset(Dataset):
 
     def __getitem__(self, idx):
         X = self.X[idx]
+        X = np.expand_dims(X, axis=0)
         y = self.y[idx]
         return {
             "X": torch.tensor(X, dtype=torch.float32),

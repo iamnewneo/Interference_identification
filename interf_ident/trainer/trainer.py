@@ -20,7 +20,7 @@ def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
         callbacks=[early_stop_callback],
         weights_summary=None,
         progress_bar_refresh_rate=progress_bar_refresh_rate,
-        precision=precision
+        precision=precision,
     )
     trainer.fit(model, train_dataloader, val_dataloader)
     return trainer
