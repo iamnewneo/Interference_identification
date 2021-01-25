@@ -48,10 +48,7 @@ class InterIdentiModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         X = batch["X"]
-        print("X.shape")
-        print(X.shape)
         targets = batch["target"]
-        print(self)
         out = self(X)
         loss = self.loss_fn(out, targets)
         accuracy = self.valid_accuracy(out, targets)
