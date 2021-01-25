@@ -10,16 +10,17 @@ def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
     )
     model = InterIdentiModel()
     gpus = None
+    precision = 32
     if config.DEVICE in ["gpu", "cuda", "cuda:0"]:
         gpus = 1
+        precision = 16
     trainer = pl.Trainer(
-        gpus=gpus,
         max_epochs=config.MAX_EPOCHS,
         min_epochs=1,
         callbacks=[early_stop_callback],
         weights_summary=None,
         progress_bar_refresh_rate=progress_bar_refresh_rate,
-        precision=16,
+        precision=precision
     )
     trainer.fit(model, train_dataloader, val_dataloader)
     return trainer

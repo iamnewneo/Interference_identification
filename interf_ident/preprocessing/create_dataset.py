@@ -23,6 +23,12 @@ def create_dataset():
         x_data, y_data, stratify=y_data, test_size=0.25, random_state=42
     )
 
+    y_train = np.squeeze(y_train)
+    y_test = np.squeeze(y_test)
+    
+    del x_data
+    del y_data
+
     with open(f"{config.BASE_PATH}/data/X_train.npy", "wb") as f:
         np.save(f, X_train)
     with open(f"{config.BASE_PATH}/data/X_test.npy", "wb") as f:
