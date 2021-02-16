@@ -12,8 +12,8 @@ def loss_fn(out, target):
 
 
 def evaluate_model(model, data_loader):
-    all_predictions = torch.FloatTensor([])
-    all_targets = torch.FloatTensor([])
+    all_predictions = torch.LongTensor([])
+    all_targets = torch.LongTensor([])
     model = model.to(config.DEVICE)
     result = {}
     total = 0

@@ -16,8 +16,13 @@ def main():
     y_train = np.load(f"{config.BASE_PATH}/data/y_train.npy")
     y_test = np.load(f"{config.BASE_PATH}/data/y_test.npy")
 
-    train_loader = create_data_loader(X_train, y_train, batch_size=config.BATCH_SIZE)
-    val_loader = create_data_loader(X_test, y_test, batch_size=config.BATCH_SIZE)
+    preprocessing = "cwt"
+    train_loader = create_data_loader(
+        X_train, y_train, batch_size=config.BATCH_SIZE, preprocessing=preprocessing
+    )
+    val_loader = create_data_loader(
+        X_test, y_test, batch_size=config.BATCH_SIZE, preprocessing=preprocessing
+    )
 
     trainer = model_trainer(train_loader, val_loader, progress_bar_refresh_rate=0)
     model = trainer.get_model()
@@ -25,6 +30,7 @@ def main():
     print(f"Test Loss: {result['loss']:.2f}")
     print(f"Test Accuracy: {result['accuracy']:.2f}")
     confusion_matrix = get_confusion_matrix(result["targets"], result["predictions"])
+    print(confusion_matrix)
 
 
 if __name__ == "__main__":
