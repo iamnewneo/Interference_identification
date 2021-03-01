@@ -9,14 +9,32 @@ class InterIdentiModel(pl.LightningModule):
     def __init__(self):
         super(InterIdentiModel, self).__init__()
         n_classes = len(config.CLASSES)
-        pool_size = (2, 2)
+        # self.cnn = nn.Sequential(
+        #     nn.Conv2d(1, 16, 3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(16, 32, 3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(32, 64, 3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Conv2d(64, 128, 3, padding=1),
+        #     nn.ReLU(inplace=True),
+        #     nn.MaxPool2d(kernel_size=2, stride=2),
+        #     nn.Linear(128 * 2 * 2, 64),
+        #     nn.Linear(64, 32),
+        #     nn.Linear(32, n_classes),
+        # )
+        pool_size = (2, 1)
         self.n_classes = n_classes
         self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
         self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
         self.conv3 = nn.Conv2d(32, 64, 3, padding=1)
         self.conv4 = nn.Conv2d(64, 128, 3, padding=1)
-        self.maxpool = nn.AdaptiveMaxPool2d(pool_size)
-        self.fc1 = nn.Linear(128 * pool_size[0] * pool_size[1], 64)
+        # self.maxpool = nn.AdaptiveMaxPool2d(pool_size)
+        self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2, padding=(0, 1))
+        self.fc1 = nn.Linear(128 * 8 * 2, 64)
         self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, n_classes)
         self.accuracy = pl.metrics.Accuracy()
@@ -24,15 +42,23 @@ class InterIdentiModel(pl.LightningModule):
         self.valid_accuracy = pl.metrics.Accuracy()
 
     def forward(self, x):
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = self.maxpool(x)
+        # print(f"Input: {x.shape}")
+        x = self.maxpool(F.relu(self.conv1(x)))
+        # print(f"conv1: {x.shape}")
+        x = self.maxpool(F.relu(self.conv2(x)))
+        # print(f"conv2: {x.shape}")
+        x = self.maxpool(F.relu(self.conv3(x)))
+        # print(f"conv3: {x.shape}")
+        x = self.maxpool(F.relu(self.conv4(x)))
+        # print(f"conv4: {x.shape}")
         x = x.view(x.size(0), -1)
+        # print(f"FC Ip: {x.shape}")
         x = F.relu(self.fc1(x))
+        # print(f"FC1: {x.shape}")
         x = F.relu(self.fc2(x))
+        # print(f"FC2: {x.shape}")
         x = self.fc3(x)
+        # print(f"FC3: {x.shape}")
         return x
 
     def loss_fn(self, out, target):
