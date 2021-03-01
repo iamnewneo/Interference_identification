@@ -5,10 +5,11 @@ from torch.utils.data import Dataset
 
 
 class InterfIdentDataset(Dataset):
-    def __init__(self, X, y, preprocessing):
+    def __init__(self, X, y, preprocessing, transform):
         self.X = X
         self.y = y
         self.preprocessing = preprocessing
+        self.transform = transform
 
     def get_cwt(self, X):
         CWT_WIDTH = 25
@@ -29,8 +30,12 @@ class InterfIdentDataset(Dataset):
         if self.preprocessing is not None:
             if self.preprocessing == "cwt":
                 X = self.get_cwt(X)
-        X = np.expand_dims(X, axis=0)
+        if self.transform:
+            X = self.transform(X)
+        else:
+            X = np.expand_dims(X, axis=0)
+            X = torch.tensor(X, dtype=torch.float32)
         return {
-            "X": torch.tensor(X, dtype=torch.float32),
+            "X": X.type(torch.float32),
             "target": torch.tensor(y).type(torch.LongTensor),
         }

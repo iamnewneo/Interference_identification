@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from tqdm import tqdm
 import pytorch_lightning as pl
-
+import torch.nn.functional as F
 from interf_ident import config
 
 
@@ -26,6 +26,7 @@ def evaluate_model(model, data_loader):
             out = model(X)
             out = out.to("cpu")
             loss = loss_fn(out, targets)
+            out = F.softmax(out, dim=1)
             _, predicted = torch.max(out.data, 1)
 
             total += targets.size(0)

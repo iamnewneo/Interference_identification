@@ -1,3 +1,4 @@
+import os
 import pickle
 import numpy as np
 from interf_ident import config
@@ -5,6 +6,12 @@ from sklearn.model_selection import train_test_split
 
 
 def create_dataset():
+    file_list = ["X_train.npy", "X_test.npy", "y_train.npy", "y_test.npy"]
+    data_base_path = f"{config.BASE_PATH}/data"
+    if all([os.path.isfile(f"{data_base_path}/{x}") for x in file_list]):
+        print("Data File Already Present")
+        return
+
     data_path = f"{config.BASE_PATH}/data/data_iq.p"
     label_path = f"{config.BASE_PATH}/data/labels.p"
 

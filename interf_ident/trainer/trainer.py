@@ -6,16 +6,16 @@ from interf_ident.model.model import InterIdentiModel
 
 def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
     early_stop_callback = EarlyStopping(
-        monitor="val_loss", min_delta=0.00, patience=5, mode="auto"
+        monitor="val_loss", min_delta=0.00, patience=10, mode="auto"
     )
     model = InterIdentiModel()
     gpus = None
     precision = 32
     if config.DEVICE in ["gpu", "cuda", "cuda:0"]:
-        gpus = 1
-        precision = 16
+        gpus = config.N_GPU
+        precision = config.FP_PRECISION
     trainer = pl.Trainer(
-        gpus = gpus,
+        gpus=gpus,
         max_epochs=config.MAX_EPOCHS,
         min_epochs=1,
         callbacks=[early_stop_callback],
@@ -23,7 +23,7 @@ def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
         progress_bar_refresh_rate=progress_bar_refresh_rate,
         precision=precision,
     )
-    trainer.fit(model, train_dataloader, val_dataloader)
+    trainer.fit(model, train_dataloader, val_dataloaders=val_dataloader)
     return trainer
 
 

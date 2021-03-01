@@ -12,10 +12,13 @@ class InterIdentiModel(pl.LightningModule):
         pool_size = (2, 2)
         self.n_classes = n_classes
         self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
-        self.conv2 = nn.Conv2d(16, 64, 3, padding=1)
+        self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
+        self.conv3 = nn.Conv2d(32, 64, 3, padding=1)
+        self.conv4 = nn.Conv2d(64, 128, 3, padding=1)
         self.maxpool = nn.AdaptiveMaxPool2d(pool_size)
-        self.fc1 = nn.Linear(64 * pool_size[0] * pool_size[1], 32)
-        self.fc2 = nn.Linear(32, n_classes)
+        self.fc1 = nn.Linear(128 * pool_size[0] * pool_size[1], 64)
+        self.fc2 = nn.Linear(64, 32)
+        self.fc3 = nn.Linear(32, n_classes)
         self.accuracy = pl.metrics.Accuracy()
         self.train_accuracy = pl.metrics.Accuracy()
         self.valid_accuracy = pl.metrics.Accuracy()
@@ -23,14 +26,17 @@ class InterIdentiModel(pl.LightningModule):
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
+        x = F.relu(self.conv3(x))
+        x = F.relu(self.conv4(x))
         x = self.maxpool(x)
         x = x.view(x.size(0), -1)
         x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return F.log_softmax(x)
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
     def loss_fn(self, out, target):
-        return F.nll_loss(out.view(-1, self.n_classes), target)
+        return F.cross_entropy(out.view(-1, self.n_classes), target)
 
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=config.LR)
@@ -41,6 +47,7 @@ class InterIdentiModel(pl.LightningModule):
         targets = batch["target"]
         out = self(X)
         loss = self.loss_fn(out, targets)
+        out = F.softmax(out, dim=1)
         accuracy = self.train_accuracy(out, targets)
         self.log("train_loss", loss, prog_bar=True)
         self.log("train_acc", accuracy, prog_bar=True)
@@ -51,6 +58,7 @@ class InterIdentiModel(pl.LightningModule):
         targets = batch["target"]
         out = self(X)
         loss = self.loss_fn(out, targets)
+        out = F.softmax(out, dim=1)
         accuracy = self.valid_accuracy(out, targets)
         self.log("val_loss", loss, prog_bar=True)
         self.log("val_acc", accuracy, prog_bar=True)

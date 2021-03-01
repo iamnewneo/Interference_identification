@@ -20,7 +20,6 @@ def plot_confusion_matrix(
     else:
         print("Confusion matrix, without normalization")
 
-    print(cm)
     plt.figure(figsize=(10, 10))
     plt.imshow(cm, interpolation="nearest", cmap=cmap)
     plt.title(title)

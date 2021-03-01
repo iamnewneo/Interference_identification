@@ -1,13 +1,23 @@
 import os
 
-CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
-N_FOLDS = 5
+ENV = os.getenv("ENV", "dev")
+configs = {
+    "dev": {"DEVICE": "cpu", "BATCH_SIZE": 4, "MAX_EPOCHS": 3, "LR": 1,},
+    "prod": {"DEVICE": "cuda", "BATCH_SIZE": 512, "MAX_EPOCHS": 50, "LR": 1e-3,},
+}
+
 SEED = 42
+CLASSES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
 BASE_PATH = os.getenv("BASE_PATH", ".")
-LR = 0.007
-DEVICE = "cuda"
-BATCH_SIZE = 512
-MAX_EPOCHS = 25
-# DEVICE = "cpu"
-# BATCH_SIZE = 5
-# MAX_EPOCHS = 3
+
+# Trainer
+N_GPU = 1
+N_WORKER = 8
+FP_PRECISION = 16
+
+# Training
+DEVICE = configs[ENV]["DEVICE"]
+BATCH_SIZE = configs[ENV]["BATCH_SIZE"]
+MAX_EPOCHS = configs[ENV]["MAX_EPOCHS"]
+LR = configs[ENV]["LR"]
