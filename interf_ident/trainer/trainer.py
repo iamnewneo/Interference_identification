@@ -6,7 +6,7 @@ from interf_ident.model.model import InterIdentiModel
 
 def model_trainer(train_dataloader, val_dataloader, progress_bar_refresh_rate):
     early_stop_callback = EarlyStopping(
-        monitor="val_loss", min_delta=0.00, patience=10, mode="auto"
+        monitor="val_loss", min_delta=0.00, patience=5, mode="auto"
     )
     model = InterIdentiModel()
     gpus = None
