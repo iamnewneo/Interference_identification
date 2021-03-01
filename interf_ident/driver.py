@@ -10,7 +10,8 @@ from interf_ident.utils.util import get_confusion_matrix
 
 def main():
 
-    create_dataset()
+    start_db = -10
+    create_dataset(start_db, valid_ratio=0.2)
     print("Loading Data")
     X_train = np.load(f"{config.BASE_PATH}/data/X_train.npy")
     X_test = np.load(f"{config.BASE_PATH}/data/X_test.npy")
@@ -24,9 +25,10 @@ def main():
 
     print(f"Train Size: {X_train.shape[0]}. Shape: {X_train.shape}")
     preprocessing = None
-    transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
-    )
+    # transform = transforms.Compose(
+    #     [transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]
+    # )
+    transform = None
 
     train_loader = create_data_loader(
         X_train,
