@@ -26,7 +26,6 @@ class InterIdentiModel(pl.LightningModule):
         #     nn.Linear(64, 32),
         #     nn.Linear(32, n_classes),
         # )
-        pool_size = (2, 1)
         self.n_classes = n_classes
         self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
         self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
@@ -96,14 +95,14 @@ class InterIdentiModel(pl.LightningModule):
         return loss, accuracy
 
     def training_epoch_end(self, train_step_outputs):
-        avg_val_loss = torch.tensor([x["loss"] for x in train_step_outputs]).mean()
-        print(f"Train Loss: {avg_val_loss:.2f}")
+        avg_train_loss = torch.tensor([x["loss"] for x in train_step_outputs]).mean()
+        self.temp_train_loss = avg_train_loss
 
     def validation_epoch_end(self, val_step_outputs):
         if not self.trainer.running_sanity_check:
             avg_val_loss = torch.tensor([x[0] for x in val_step_outputs]).mean()
             avg_val_acc = torch.tensor([x[1] for x in val_step_outputs]).mean()
             print(
-                f"Epoch: {self.current_epoch} Val Acc: {avg_val_acc:.2f} Val Loss: {avg_val_loss:.2f} ",
-                end="",
+                f"Epoch: {self.current_epoch} Val Acc: {avg_val_acc:.2f}"
+                f" Val Loss: {avg_val_loss:.2f} Train Loss: {self.temp_train_loss:.2f}"
             )
