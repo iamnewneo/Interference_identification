@@ -5,11 +5,12 @@ from interf_ident.preprocessing.create_dataset import create_dataset
 from interf_ident.trainer.trainer import model_trainer
 from interf_ident.data_loader.data_loader import create_data_loader
 from interf_ident.trainer.predict import evaluate_model
-from interf_ident.utils.util import get_confusion_matrix
+from interf_ident.utils.util import get_confusion_matrix, seed_everything
 
 
 def main():
 
+    seed_everything()
     start_db = -10
     create_dataset(start_db, valid_ratio=0.2)
     print("Loading Data")
@@ -50,7 +51,9 @@ def main():
     result = evaluate_model(model, data_loader=val_loader)
     print(f"\nTest Loss: {result['loss']:.2f}")
     print(f"Test Accuracy: {result['accuracy']:.2f}")
-    confusion_matrix = get_confusion_matrix(result["targets"], result["prediction_labels"])
+    confusion_matrix = get_confusion_matrix(
+        result["targets"], result["prediction_labels"]
+    )
     print(confusion_matrix)
 
 
