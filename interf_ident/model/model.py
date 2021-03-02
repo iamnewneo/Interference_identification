@@ -77,10 +77,10 @@ class InterIdentiModel(pl.LightningModule):
         targets = batch["target"]
         out = self(X)
         loss = self.loss_fn(out, targets)
-        out = F.softmax(out, dim=1)
-        accuracy = self.train_accuracy(out, targets)
+        # soft_out = F.softmax(out, dim=1)
+        # accuracy = self.train_accuracy(soft_out, targets)
         self.log("train_loss", loss, prog_bar=True)
-        self.log("train_acc", accuracy, prog_bar=True)
+        # self.log("train_acc", accuracy, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -88,11 +88,11 @@ class InterIdentiModel(pl.LightningModule):
         targets = batch["target"]
         out = self(X)
         loss = self.loss_fn(out, targets)
-        out = F.softmax(out, dim=1)
-        accuracy = self.valid_accuracy(out, targets)
+        # soft_out = F.softmax(out, dim=1)
+        # accuracy = self.valid_accuracy(soft_out, targets)
         self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", accuracy, prog_bar=True)
-        return loss, accuracy
+        # self.log("val_acc", accuracy, prog_bar=True)
+        return loss, out, targets
 
     def training_epoch_end(self, train_step_outputs):
         avg_train_loss = torch.tensor([x["loss"] for x in train_step_outputs]).mean()
@@ -100,9 +100,14 @@ class InterIdentiModel(pl.LightningModule):
 
     def validation_epoch_end(self, val_step_outputs):
         if not self.trainer.running_sanity_check:
-            avg_val_loss = torch.tensor([x[0] for x in val_step_outputs]).mean()
-            avg_val_acc = torch.tensor([x[1] for x in val_step_outputs]).mean()
+            # avg_val_loss = torch.tensor([x[0] for x in val_step_outputs]).mean()
+            # avg_val_acc = torch.tensor([x[1] for x in val_step_outputs]).mean()
+            preds = torch.cat([x[1] for x in val_step_outputs], axis=0)
+            targets = torch.cat([x[2] for x in val_step_outputs], axis=0)
+            actual_loss = self.loss_fn(preds, targets)
+            soft_out = F.softmax(preds, dim=1)
+            actual_acc = self.valid_accuracy(soft_out, targets)
             print(
-                f"Epoch: {self.current_epoch} Val Acc: {avg_val_acc:.2f}"
-                f" Val Loss: {avg_val_loss:.2f} Train Loss: {self.temp_train_loss:.2f}"
+                f"Epoch: {self.current_epoch} Val Acc: {actual_acc:.2f}"
+                f" Val Loss: {actual_loss:.2f} Train Loss: {self.temp_train_loss:.2f}"
             )

@@ -50,7 +50,7 @@ def main():
     result = evaluate_model(model, data_loader=val_loader)
     print(f"\nTest Loss: {result['loss']:.2f}")
     print(f"Test Accuracy: {result['accuracy']:.2f}")
-    confusion_matrix = get_confusion_matrix(result["targets"], result["predictions"])
+    confusion_matrix = get_confusion_matrix(result["targets"], result["prediction_labels"])
     print(confusion_matrix)
 
 
