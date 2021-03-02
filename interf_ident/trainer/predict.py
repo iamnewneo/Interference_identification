@@ -58,10 +58,10 @@ def evaluate_model(model, data_loader):
             soft_out_list.append(soft_out)
             target_list.append(targets)
 
-    result["predictions"] = torch.cat(pred_list, axis=0)
+    result["predictions"] = torch.cat(pred_list, axis=0).to("cpu")
     _, result["prediction_labels"] = torch.max(result["predictions"], 1)
-    result["prediction_proba"] = torch.cat(soft_out_list, axis=0)
-    result["targets"] = torch.cat(target_list, axis=0)
+    result["prediction_proba"] = torch.cat(soft_out_list, axis=0).to("cpu")
+    result["targets"] = torch.cat(target_list, axis=0).to("cpu")
     result["loss"] = loss_fn(result["predictions"], result["targets"]).item()
     result["accuracy"] = (
         100.0 * accuracy_metric(result["prediction_proba"], result["targets"]).item()
